@@ -1,0 +1,5 @@
+{
+  "name": "SynoPhoto Cull",
+  "description": "Efficient photo culling tool for Synology NAS with mobile and desktop support.",
+  "requestFramePermissions": []
+}
