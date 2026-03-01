@@ -39,10 +39,38 @@ To run this application on your local machine for testing or development:
 
 To use this with your actual photo library on a Synology NAS, you have two primary options:
 
-### Option A: Docker (Recommended)
-1. Build the Docker image or use a Node.js base image.
-2. **Volume Mapping**: Map your Synology photo folder (e.g., `/volume1/photo/2024_Trip`) to the `/app/photos` directory inside the container.
-3. **Port Mapping**: Map container port `3000` to a local port on your NAS (e.g., `3000`).
+### Option A: Docker (Recommended - Synology Container Manager)
+
+If you have a Synology NAS that supports Docker (now called **Container Manager**), this is the easiest way to deploy:
+
+1. **Build the Image**:
+   Since Synology doesn't build images directly from source easily, you should build it on your computer first and push it to a registry (like Docker Hub) or export it as a `.tar` file.
+   ```bash
+   # On your computer
+   docker build -t synophoto-cull .
+   docker save synophoto-cull > synophoto-cull.tar
+   ```
+
+2. **Upload to NAS**:
+   Upload the `synophoto-cull.tar` file to a folder on your NAS using File Station.
+
+3. **Import Image**:
+   - Open **Container Manager** on your Synology.
+   - Go to **Image** > **Import** > **Add from file**.
+   - Select the `.tar` file you uploaded.
+
+4. **Create Container**:
+   - Select the imported image and click **Run**.
+   - **Container Name**: `synophoto-cull`
+   - **Port Settings**: Map Local Port `3000` to Container Port `3000`.
+   - **Volume Settings**:
+     - Click **Add Folder**.
+     - Select your NAS photo folder (e.g., `/photo/2024`).
+     - **Mount Path**: `/app/photos` (This is critical).
+     - (Optional) Map another folder to `/app/thumbs` to persist thumbnails across restarts.
+   - **Environment**: Set `NODE_ENV` to `production`.
+
+5. **Done!**: Your app is now running at `http://<NAS-IP>:3000`.
 
 ### Option B: Manual Setup (via SSH/Task Scheduler)
 1. Copy the project files to a folder on your NAS (e.g., `/volume1/docker/synophoto-cull`).
